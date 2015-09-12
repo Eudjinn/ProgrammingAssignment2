@@ -1,5 +1,4 @@
 ## These functions (see below) look almost the same as the example for this assignment
-## Below these functions there are some commands one can execute in order to check how to use them
 
 ## This function takes a matrix as a parameter and creates a special list with four functions: 
 ## getmatrix, setmatrix, getinverse and setinverse
@@ -7,13 +6,18 @@
 makeCacheMatrix <- function(x = matrix()) {
     inv <- NULL
     setmatrix <- function(mtrx) {
+        # assigning new matrix to a variable in the upper environment
         x <<- mtrx
+        # invalidating cache
         inv <<- NULL
     }
     getmatrix <- function() x
+    
+    # function that saves an inverse of a matrix in the upper environment 
     setinverse <- function(invmtrx) inv <<- invmtrx
     getinverse <- function() inv
     
+    # returning a special object
     list(setmatrix = setmatrix,
          getmatrix = getmatrix,
          setinverse = setinverse,
@@ -30,44 +34,11 @@ cacheSolve <- function(x, ...) {
         message("getting cached inverse of the matrix")
         return(inv)
     }
+    # if inv is NULL that means either function is executed for the first time or 
+    # cache was invalidated using $setmatrix and we need to perform calculations on the new matrix
     mtrx <- x$getmatrix()
     inv <- solve(mtrx, ...)
+    # save calculated inverse of the matrix in cache
     x$setinv(inv)
     inv
 }
-
-## In order to check how they work one can execute the following commands:
-##
-## > source("cachematrix.R")
-##
-## > a <- matrix(c(1, 2, 1, 4, 6, 4, 7, 3, 9), nrow = 3, ncol = 3)
-## > b <- makeCacheMatrix(a)
-##
-## check how "special" list of functions work 
-##
-## > b$getmatrix()
-## [,1] [,2] [,3]
-## [1,]    1    4    7
-## [2,]    2    6    3
-## [3,]    1    4    9
-##
-## Try getting the cached value directly
-## > b$getinverse()
-## NULL
-## not calculated yet
-## 
-## make a call to function "cacheSolve" in order to calculate the inverse of a matrix:
-## > c <- cacheSolve(b)
-## > c
-## [,1] [,2]  [,3]
-## [1,] -10.50  2.0  7.50
-## [2,]   3.75 -0.5 -2.75
-## [3,]  -0.50  0.0  0.50
-## 
-## look if this inverse matrix is now accessible from cache:
-## > b$getinverse()
-## [,1] [,2]  [,3]
-## [1,] -10.50  2.0  7.50
-## [2,]   3.75 -0.5 -2.75
-## [3,]  -0.50  0.0  0.50
-##
